@@ -26,5 +26,6 @@ classDiagram
         +int amount
         +string merchant
         +string merchant_category
+        +boolean approved
     }
 ```
