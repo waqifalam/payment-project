@@ -1,0 +1,30 @@
+# Payments Project
+TODO
+
+## DB Schema
+MermaidJS
+```
+classDiagram
+    Card <|-- CardControls
+    Card <|-- Transactions
+    class Card {
+        +string card_id
+        +string name
+        +string number - encrypted
+        +string verification_number - encrypted
+        +datetime expiry_date
+        +datetime valid_from
+    }
+    class CardControls {
+        +string card_control_id
+        +string card_id
+        +string control_type
+        +string control_condition
+    }
+    class Transactions {
+        +string card
+        +int amount
+        +string merchant
+        +string merchant_category
+    }
+```
