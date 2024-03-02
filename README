@@ -1,5 +1,9 @@
 # Payments Project
-TODO
+To start API
+```
+npm install
+npm run dev
+```
 
 ## DB Schema
 MermaidJS

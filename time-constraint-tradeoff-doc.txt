@@ -1,0 +1,25 @@
+# Project tradeoffs made due to time constraints
+- It was taking too much time scaffolding the project and to setup Mocha as a testing framework (plus all the setup and teardown for each of the test cases would eat up a lot of time), I've instead decided to proceed with the API completeness instead first (happy path) and would later come back to write test for the edge cases before writing the edge case logic in the controller but due to time constraints I didn't get enough time to and instead just proceeded with documenting how I would go about doing TDD for the APIs in this doc instead + also provided a sample test file just to show I would proceed with tests if time permitted.
+- I have decided to skip any form of validation on API inputs due to time constraints. Ideally if possible I would've setup a swagger API doc for the APIs and used express-validator package to validate the APIs and proceed with using Zod (lightweight TS compatible JOI alternative) to validate the DAO objects from the API routes
+- Missing API error handler middleware to throw 500 Internal Server Error, atm just crashes the server instead
+
+# APIs and their individual tradeoffs due to time constraint
+/cards GET and POST
+- Missing API and card object validation
+- Tests for controller - setup a testing suite to check if both insert and get are working as expected to retrieve and insert a new card
+
+/cardControls GET POST DELETE
+- Missing API and card object validation
+- For POST and DELETE the API will return a 500 Internal Server Error if the card_id doesn't exist, should ideally return 404 if card doesn't exist
+- I was confused with the limitations on card_controls for a card, ie. I wasn't sure how many we could have for each type of card_control, or if it did matter. I instead decided to proceed with multiple card_control (regardless of type of card_control) and just use the first card_control of each type when performing transactions
+- Tests for controller - setup a testing suite to check if insert, get and delete are working as expected to insert, retrieve and delete a card_option
+
+/transactions GET DELETE
+- Missing API and card object validation
+- Missing card constraint check (same as card controls APIs)
+- Tests for controller - setup a testing suite to check if a transaction is appropriately approved or rejected depending on the conditions of the transactions given some sample card and card conditions (test all the different card condition filters + test happy path)
+- Transaction processing logic could be extracted to it's own lib or util since it's got seperate logic
+- Transaction processing logic could also do a SELECT on the DB to find the first condition instead of using JS find on all the card conditions, keeps code cleaner
+- If there was a constraint on the cardControls for one of each type, I could probably do a `const approval = cardOptions.reduce(approvalLogic, true)` to simplify the whole thing
+- Clean up the multiple if statements in the transaction approval logic with a switch statement (unpopular call but I believe it would be nicer to only update the transaction to `approved = true` for a default case instead of rejecting the approval multiple times, keeps logic DRY and cleaner)
+- There was some confusion around rejected and approved transactions. I went with the current implementation since I believed if there was some form of outage in the middle of processing, we would still have that payment, if that was not the case and I had to ensure atomic transaction I could probably just insert after all the processing in one go instead of updating or could do a db transaction to ensure atomic transaction
