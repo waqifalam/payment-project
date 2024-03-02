@@ -1,18 +1,24 @@
 import express from 'express';
 
+import { controller } from './controller';
+
 export const cardControlsRoutes = express.Router();
 
-cardControlsRoutes.get('/', (req, res) => {
-  // TODO route to get all card controls for a card
-  res.json([])
+cardControlsRoutes.get('/:cardId', async (req, res) => {
+  const cardControls = await controller.getCardControls(req.params.cardId);
+  res.json(cardControls);
 });
 
-cardControlsRoutes.post('/', (req, res) => {
-  // TODO route to create a new card control for a card
-  res.send('ok');
+cardControlsRoutes.post('/', async (req, res) => {
+  const cardControl = await controller.createCardControl(
+    req.body.card_id,
+    req.body.control_type,
+    req.body.control_condition,
+  )
+  res.json(cardControl);
 })
 
-cardControlsRoutes.delete('/', (req, res) => {
-  // TODO route to delete a card control
-  res.send('ok')
+cardControlsRoutes.delete('/:cardControlId', async (req, res) => {
+  await controller.deleteCardControl(req.params.cardControlId);
+  res.send('Card control deleted');
 })
