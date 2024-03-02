@@ -31,16 +31,27 @@ export const controller = {
     const maxAmountFilter = cardControls.find((control: any) => control.control_type === 'maxAmount');
     const minAmountFilter = cardControls.find((control: any) => control.control_type === 'minAmount');
     let approved = true;
-    if (
-      (categoryFilter && transaction.merchant_category !== categoryFilter.control_condition) ||
-      (merchantFilter && transaction.merchant !== categoryFilter.control_condition) ||
-      (maxAmountFilter && transaction.amount > Number(categoryFilter.control_condition)) ||
-      (minAmountFilter && transaction.amount < Number(categoryFilter.control_condition))
-    ) {
+    let errMessage = '';
+    if (categoryFilter && transaction.merchant_category !== categoryFilter.control_condition) {
       approved = false;
+      errMessage = 'merchant is not valid';
+    }
+    if (merchantFilter && transaction.merchant !== categoryFilter.control_condition) {
+      approved = false;
+      errMessage = 'Merchant is not accepted'
+    }
+    
+    if (maxAmountFilter && transaction.amount > Number(categoryFilter.control_condition)) {
+      approved = false;
+      errMessage = 'amount is above the threshold for this card';
+    }
+
+    if (minAmountFilter && transaction.amount < Number(categoryFilter.control_condition)) {
+      approved = false;
+      errMessage = 'amount is below the min threshold for this card'
     }
     createdTransaction.approved = approved;
     await createdTransaction.save();
-    return createdTransaction;
+    return [approved ? 200 : 400, errMessage]
   }
 };

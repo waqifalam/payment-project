@@ -17,6 +17,6 @@ transactionsRoutes.post('/', async (req, res) => {
     merchant: req.body.merchant,
     merchant_category: req.body.merchant_category,
   }
-  const createdTransaction = await controller.processCardTransaction(transaction);
-  res.json(createdTransaction);
+  const [status, message] = await controller.processCardTransaction(transaction);
+  res.status(Number(status)).send(message);
 })
